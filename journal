@@ -3,3 +3,19 @@ This is a journal to record progress.
 Jan 22 25 - JD
 finished parser and scraper for fanduel and bet365
 these sites are ready to be compared. just need to figure out a way to compare them effectively.
+
+Jan 22 2025 -wh
+adding a combiner to combine and sort the csv files from different books this then creates a .json file with the games, teams and best odds, as well a the book they came from.
+One Caveat is that the .csv files need to be in the same order. (fanduel and 365 csv's)
+I then looked into updating the comparator to read the .json, and do the same calculations that were there before in a loop
+These are then analyzed for good bets and printed in terminal
+
+
+Jan 23 25 - JD
+Adjusted the bet365_parser so its more robust
+issues with the fanduel parser, only taking 8 games when theres 11 today
+changed the fanduel parser, works but only issue is that it relies on the b365 csv file
+csvsorter adjusts the game numbers so that both csvs have the same game number attached to each game
+didnt touch comparator or combiner
+
+Must be run in this order: b365scraper b365parser Fscraper fparser CSV_sorter Combiner Comparator

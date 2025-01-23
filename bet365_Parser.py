@@ -1,91 +1,78 @@
-import pandas as pd
+import re
+import csv
 from bs4 import BeautifulSoup
 
-# Load the CSV translator into a DataFrame
-translator_df = pd.read_csv("team_names.csv")  # Replace with your CSV file path
+# Load the team names from the CSV file into a dictionary
+team_name_mapping = {}
 
-# Clean up the column names and handle any extra spaces
-translator_df.columns = translator_df.columns.str.strip()
+with open('team_names.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        actual_name, bet365_name = row
+        team_name_mapping[bet365_name.strip()] = actual_name.strip()
 
-# Handle any missing or incomplete data by dropping rows with empty 'bet365_names' or 'actual_names'
-translator_df = translator_df.dropna(subset=['bet365_names', 'actual_names'])
+# Open the HTML file with utf-8 encoding
+with open('output_bet365.html', 'r', encoding='utf-8') as file:
+    soup = BeautifulSoup(file, 'html.parser')
 
-# Convert the bet365_names to lowercase and strip extra spaces for better matching
-translator_df['bet365_names'] = translator_df['bet365_names'].str.strip().str.lower()
-translator_df['actual_names'] = translator_df['actual_names'].str.strip()
+# Find all elements with class 'pl-PodLoaderModule_Pod-61'
+pod_elements = soup.find_all(class_="pl-PodLoaderModule_Pod-61")
 
-# Create a dictionary mapping from bet365_names (lowercase) to actual_names
-name_mapping = dict(zip(translator_df["bet365_names"], translator_df["actual_names"]))
-
-# Open the HTML file
-with open("output_bet365.html", "r", encoding="utf-8") as file:
-    html_content = file.read()
-
-# Parse the HTML content
-soup = BeautifulSoup(html_content, "html.parser")
-
-# Initialize lists to store the results
-game_results = []
-
-# Find the NHL section header
-nhl_section = soup.find("div", class_="ss-HomeSpotlightHeader_Title ss-HomeSpotlightHeader_Title-lang32")
-if nhl_section and "NHL" in nhl_section.text:
-    print("NHL section found. Parsing the teams and odds...")
-
-    # Find all the team containers first
-    team_elements = soup.find_all("div", class_="cpm-ParticipantFixtureDetailsIceHockey_Team")
+# Iterate over each pod element to check if it contains 'NHL'
+for pod in pod_elements:
     
-    # Store all the teams in the correct order
-    teams = []
-    for team in team_elements:
-        team_name = team.text.strip().lower()
-        if team_name in name_mapping:
-            translated_name = name_mapping[team_name]
-            teams.append(translated_name)
-
-    # Find the "cpm-MarketOdds" section and check if it contains the Money header
-    market_odds_section = soup.find_all("div", class_="cpm-MarketOdds gl-Market_General gl-Market_General-columnheader")
+    # Check if the class 'ss-HomeSpotlightHeader_Title ss-HomeSpotlightHeader_Title-lang32' exists inside the pod
+    nhl_title = pod.find(class_="ss-HomeSpotlightHeader_Title ss-HomeSpotlightHeader_Title-lang32")
     
-    for section in market_odds_section:
-        # Check if the immediate child has the "Money" header
-        money_header = section.find("div", class_="cpm-MarketOddsHeader")
-        if money_header and "Money" in money_header.text:
-            print("Found Money header. Extracting moneyline odds...")
+    if nhl_title and "NHL" in nhl_title.text:
+        print("Found NHL:", nhl_title.text.strip())
+        
+        # Find all elements with class 'cpm-ParticipantFixtureDetailsIceHockey_Team' inside this pod
+        teams = pod.find_all(class_="cpm-ParticipantFixtureDetailsIceHockey_Team")
+        
+        nhl_teams = []  # Initialize the array
 
-            # Now, find all the odds elements that match the specified classes
-            odds_elements_1 = section.find_all("span", class_="cpm-ParticipantOdds_Odds")
-            
-            # If odds are found, make sure they match the number of teams
-            if len(odds_elements_1) == len(teams):
-                moneyline_odds = [odd.text.strip() for odd in odds_elements_1]
+        for team in teams:
+            bet365_team_name = team.text.strip()
+            actual_name = team_name_mapping.get(bet365_team_name, bet365_team_name)  # Default to bet365 name if no match
+            nhl_teams.append(actual_name)  # Add the actual name to the nhl_teams array
 
-                # Pair teams and their corresponding odds sequentially
-                for idx in range(0, len(teams), 2):
-                    team1 = teams[idx]
-                    team2 = teams[idx + 1] if idx + 1 < len(teams) else None
-                    moneyline1 = moneyline_odds[idx] if idx < len(moneyline_odds) else ""
-                    moneyline2 = moneyline_odds[idx + 1] if (idx + 1) < len(moneyline_odds) else ""
+        
+        # Now, find all elements with class 'cpm-MarketOdds gl-Market_General gl-Market_General-columnheader'
+        market_odds_headers = pod.find_all(class_="cpm-MarketOdds gl-Market_General gl-Market_General-columnheader")
+        
+        # Iterate over each market odds header
+        for odds_header in market_odds_headers:
+            # Check if the header string contains "money"
+            if "money" in odds_header.text.lower():
+                
+                # Remove the word 'money' from the string
+                odds_text = odds_header.text.strip().replace("money", "").strip()
+                
+                # Use a regex to split the string by the transition from one number to another (2 decimal places)
+                odds_list = [float(x) for x in re.findall(r'\d+\.\d{2}', odds_text)]
+                
 
-                    # Append the game result
-                    game_results.append([f"Game {idx // 2 + 1}", team1, moneyline1, team2, moneyline2])
-            else:
-                print(f"Warning: Number of odds ({len(odds_elements_1)}) does not match the number of teams ({len(teams)}).")
-                # Proceed to write the team names only
-                for idx in range(0, len(teams), 2):
-                    team1 = teams[idx]
-                    team2 = teams[idx + 1] if idx + 1 < len(teams) else None
-                    game_results.append([f"Game {idx // 2 + 1}", team1, "", team2, ""])
-            
-            break  # We only need to process the first valid market section
-    
-else:
-    print("NHL section not found in the HTML. Parsing skipped.")
 
-# Convert the results into a DataFrame
-game_results_df = pd.DataFrame(game_results, columns=["Game", "Team 1", "moneyline 1", "Team 2", "moneyline 2"])
 
-# Output the results to a CSV file
-game_results_df.to_csv("bet365_results.csv", index=False)
+# Prepare the data
+games = []
+for i in range(0, len(nhl_teams), 2):  # Step through the teams in pairs
+    game_number = f"Game {i // 2 + 1}"  # Generate the game number
+    team_1 = nhl_teams[i]
+    moneyline_1 = odds_list[i]
+    team_2 = nhl_teams[i + 1]
+    moneyline_2 = odds_list[i + 1]
+    games.append([game_number, team_1, moneyline_1, team_2, moneyline_2])
 
-# Print the output for verification
-print("Translated game results saved to bet365_results.csv.")
+# Write to CSV
+with open('bet365_results.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+
+    # Write the header
+    writer.writerow(['Game', 'Team 1', 'moneyline 1', 'Team 2', 'moneyline 2'])
+
+    # Write the rows
+    writer.writerows(games)
+
+print("Data has been written to bet365_results.csv in the specified format.")
