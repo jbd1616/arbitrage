@@ -1,0 +1,167 @@
+[
+    {
+        "Game":"Game 1",
+        "Details":[
+            {
+                "Team":"Boston Bruins",
+                "Best Odds":2.35,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Ottawa Senators",
+                "Best Odds":1.6849315068,
+                "Source File":"FD"
+            }
+        ]
+    },
+    {
+        "Game":"Game 10",
+        "Details":[
+            {
+                "Team":"Anaheim Ducks",
+                "Best Odds":2.4,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Pittsburgh Penguins",
+                "Best Odds":1.625,
+                "Source File":"FD"
+            }
+        ]
+    },
+    {
+        "Game":"Game 11",
+        "Details":[
+            {
+                "Team":"Nashville Predators",
+                "Best Odds":1.4081632653,
+                "Source File":"FD"
+            },
+            {
+                "Team":"San Jose Sharks",
+                "Best Odds":3.0,
+                "Source File":"B365"
+            }
+        ]
+    },
+    {
+        "Game":"Game 2",
+        "Details":[
+            {
+                "Team":"Detroit Red Wings",
+                "Best Odds":1.83,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Montreal Canadiens",
+                "Best Odds":2.12,
+                "Source File":"FD"
+            }
+        ]
+    },
+    {
+        "Game":"Game 3",
+        "Details":[
+            {
+                "Team":"Carolina Hurricanes",
+                "Best Odds":1.25,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Columbus Blue Jackets",
+                "Best Odds":4.2,
+                "Source File":"B365"
+            }
+        ]
+    },
+    {
+        "Game":"Game 4",
+        "Details":[
+            {
+                "Team":"New York Rangers",
+                "Best Odds":1.66,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Philadelphia Flyers",
+                "Best Odds":2.3,
+                "Source File":"FD"
+            }
+        ]
+    },
+    {
+        "Game":"Game 5",
+        "Details":[
+            {
+                "Team":"Minnesota Wild",
+                "Best Odds":1.62,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Utah Hockey Club",
+                "Best Odds":2.35,
+                "Source File":"B365"
+            }
+        ]
+    },
+    {
+        "Game":"Game 6",
+        "Details":[
+            {
+                "Team":"St. Louis Blues",
+                "Best Odds":2.3,
+                "Source File":"FD"
+            },
+            {
+                "Team":"Vegas Golden Knights",
+                "Best Odds":1.71,
+                "Source File":"B365"
+            }
+        ]
+    },
+    {
+        "Game":"Game 7",
+        "Details":[
+            {
+                "Team":"Edmonton Oilers",
+                "Best Odds":1.5617977528,
+                "Source File":"FD"
+            },
+            {
+                "Team":"Vancouver Canucks",
+                "Best Odds":2.5,
+                "Source File":"B365"
+            }
+        ]
+    },
+    {
+        "Game":"Game 8",
+        "Details":[
+            {
+                "Team":"Buffalo Sabres",
+                "Best Odds":2.2,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Calgary Flames",
+                "Best Odds":1.7142857143,
+                "Source File":"FD"
+            }
+        ]
+    },
+    {
+        "Game":"Game 9",
+        "Details":[
+            {
+                "Team":"Seattle Kraken",
+                "Best Odds":2.2,
+                "Source File":"B365"
+            },
+            {
+                "Team":"Washington Capitals",
+                "Best Odds":1.7142857143,
+                "Source File":"FD"
+            }
+        ]
+    }
+]

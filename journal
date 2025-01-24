@@ -19,3 +19,10 @@ csvsorter adjusts the game numbers so that both csvs have the same game number a
 didnt touch comparator or combiner
 
 Must be run in this order: b365scraper b365parser Fscraper fparser CSV_sorter Combiner Comparator
+
+Jan 23 25 -WH
+First combined the sorter with the combiner, do not see a reason why we need them seperate. Added bash script as executable to make running the files easier and quicker. Can be run in the sequence above by typing `.\run.bat`. 
+
+-If we are happy with our current setup I have some ideas: 
+- Branching to NBA games - not sure how complicated this would be 
+- adding a different book - Draftkings etc. so that there are more odds. 
