@@ -28,7 +28,7 @@ file2_df.to_csv("./parser-out/fanduel_results.csv", index=False)
 ##NOW WITH NEW FILES WE WILL COMBINE THE DATA
 
 # Load the CSV files into DataFrames
-file1_df = pd.read_csv("./parser-out/bet365_results.csv")  # Replace with the path to your first CSV file (e.g., B365)
+file1_df = pd.read_csv("./parser-out/bet365_results.csv")  
 file2_df = pd.read_csv("./parser-out/fanduel_results.csv")  # Replace with the path to your second CSV file (e.g., FD)
 
 # Strip any leading or trailing spaces from column names (common issue with CSV files)
@@ -68,9 +68,21 @@ best_odds_df = pd.DataFrame(best_odds_list, columns=["Game", "Team", "Best Odds"
 best_odds_df = best_odds_df.loc[best_odds_df.groupby(['Game', 'Team'])['Best Odds'].idxmax()]
 
 # Reformat the output grouped by game
-grouped_output = best_odds_df.groupby("Game").apply(
-    lambda x: x[['Team', 'Best Odds', 'Source File']].to_dict(orient='records')
-).reset_index(name='Details')
+# Ensure 'Game' column is numeric for proper sorting
+# Extract numeric part from the 'Game' column and convert to integers
+best_odds_df['Game'] = best_odds_df['Game'].str.extract(r'(\d+)').astype(int)
+
+# Reformat output grouped by game with proper numeric sorting
+grouped_output = (
+    best_odds_df.sort_values(by="Game")  # Sort numerically
+    .groupby("Game")
+    .apply(lambda x: x[['Team', 'Best Odds', 'Source File']].to_dict(orient='records'))
+    .reset_index(name='Details')
+)
+
+# Print the grouped output
+print(grouped_output)
+
 
 # Save the reformatted output to a JSON file for better readability
 grouped_output.to_json("best_odds_by_game.json", orient='records', indent=4)
